@@ -1,14 +1,14 @@
-FROM ttbb/base:jdk11
+FROM shoothzj/compile:jdk21-mvn AS compiler
 
-WORKDIR /opt
+RUN git clone --depth 1 https://github.com/apache/pulsar.git && \
+    cd pulsar && \
+    mvn -B clean package -Pcore-modules,-main -DskipTests=true && \
+    mkdir /opt/pulsar && \
+    tar -xf /pulsar/distribution/server/target/apache-pulsar-3.3.0-SNAPSHOT-bin.tar.gz -C /opt/pulsar --strip-components 1
 
-ARG version=2.10.2
-ARG download=2.10.2-bin
+FROM shoothzj/base:jdk21
 
-RUN wget -q https://archive.apache.org/dist/pulsar/pulsar-$version/apache-pulsar-$download.tar.gz  && \
-mkdir -p /opt/pulsar && \
-tar -xf apache-pulsar-$download.tar.gz -C /opt/pulsar --strip-components 1 && \
-rm -rf apache-pulsar-$download.tar.gz
+COPY --from=compiler /opt/pulsar /opt/pulsar
 
 ENV PULSAR_HOME /opt/pulsar
 
