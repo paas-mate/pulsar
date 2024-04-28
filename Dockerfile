@@ -13,3 +13,5 @@ COPY --from=compiler /opt/pulsar /opt/pulsar
 ENV PULSAR_HOME /opt/pulsar
 
 WORKDIR /opt/pulsar
+
+ENTRYPOINT [ "/opt/pulsar/entrypoint.sh" ]
